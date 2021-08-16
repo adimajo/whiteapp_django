@@ -116,6 +116,7 @@ document:
 
 build whiteapp:
   stage: build
+  <<: *common_tag
   image:
     name: docker-remote.registry.saas.cagip.group.gca/kaniko-project/executor:debug-v1.0.0
     entrypoint: [""]
