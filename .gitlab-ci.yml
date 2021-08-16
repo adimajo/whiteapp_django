@@ -84,7 +84,7 @@ generate_tag:
   only:
    - master
   script:
-    - echo export PACKAGE_VERSION=`python -c 'import renard_joint; print(whiteapp_python_django.__version__)'` >> build.env
+    - echo export APPLICATION_TAG_VERSION=`python -c 'import renard_joint; print(whiteapp_python_django.__version__)'` >> build.env
 
 document:
   stage: document
