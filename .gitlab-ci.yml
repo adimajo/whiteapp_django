@@ -123,6 +123,7 @@ build whiteapp:
     TEST_STATIC: 0
     TEST_DB: 1
   script:
+    - ls -al
     - . build.env
     - cd whiteapp
     - mkdir -p /kaniko/.docker
