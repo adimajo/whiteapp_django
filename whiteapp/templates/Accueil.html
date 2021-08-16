@@ -1,0 +1,98 @@
+{% extends "base_site.html" %}
+{% load static %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block subtitle %}
+{% endblock %}
+
+{% block content %}
+
+<div id="app_accueil">
+
+    <div v-if="loading">
+        <div  class="d-flex justify-content-center" >
+            <div  id = "lds-ring" class="lds-ring">
+                <div></div><div></div><div></div>
+            </div>
+        </div>
+        <div class="cls-label"> Veuillez patienter ...</div>
+    </div>
+    <div v-else>
+        <div class="d-flex justify-content-center" style="color: black;font-weight: bold;">
+            Version de la whiteapp
+        </div>
+        <div class="d-flex justify-content-center" style="color: black;">
+            ##package_version##
+        </div>
+        <div class="d-flex justify-content-center" style="color: black;font-weight: bold;">
+            Version de Python
+        </div>
+        <div class="d-flex justify-content-center" style="color: black;">
+            ##python_version##
+        </div>
+        <div class="d-flex justify-content-center" style="color: black;font-weight: bold;">
+            Liste des packages utilisés et leur version
+        </div>
+        <div v-html="requirements"></div>
+    </div>
+
+</div>
+
+<script>
+    var app_accueil = new Vue({
+        el: '#app_accueil',
+        delimiters: ['##', '##'],
+        data: {
+        messages: [],
+        requirements: [],
+        init: false,
+                now: Date.now(),
+                loading: true},
+
+        methods: {
+
+            init_func(){
+                data = {"csrfmiddlewaretoken": '{{ csrf_token }}',
+                        "init": true,
+                        }
+                this.load_data(data)
+            },
+
+            load_data(data){
+                var self = this;
+                $.ajax({
+                    url: '{% url 'WhiteApp:AccueilVue' %}',
+                    data: data,
+                    method: 'POST',
+                    success: function(result) {
+                        self.loading=true;
+                        self.requirements = result.requirements
+                        self.package_version = result.package_version
+                        self.python_version = result.python_version
+
+                        {# Messages d'alerte #}
+                        self.messages = result.messages
+                        setTimeout(function() { $(".alert").hide(); }, 10000);
+                        self.loading=false;
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+
+            },
+
+        },
+        mounted:
+           function () {
+                this.init_func();
+           }
+    })
+
+</script>
+
+
+{% endblock %}
