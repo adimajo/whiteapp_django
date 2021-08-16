@@ -33,9 +33,10 @@ stages:
   - lint
   - test
   - security
+  - versionning
   - document
   - build
-  - test deploy
+  - deploy_dev
 
 variables:
   the_proxy: "http://host.docker.internal:3128"
