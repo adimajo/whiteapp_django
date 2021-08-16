@@ -76,7 +76,6 @@ security:
 
 generate_tag:
   artifacts:
-    when: on_success
     paths:
       - build.env
   stage: versionning
@@ -124,7 +123,7 @@ build whiteapp:
     TEST_STATIC: 0
     TEST_DB: 1
   script:
-    - source build.env
+    - . build.env
     - cd whiteapp
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"https://$BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY\":{\"auth\":\"$(echo -n $BOOT_ARTI_USER:$BOOT_ARTI_PASSWORD | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
