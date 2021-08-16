@@ -129,7 +129,7 @@ build whiteapp:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"https://$BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY\":{\"auth\":\"$(echo -n $BOOT_ARTI_USER:$BOOT_ARTI_PASSWORD | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --build-arg SECRET_KEY=$SECRET_KEY --build-arg NAME=$NAME --build-arg USER_DB=$USER_DB --build-arg HOST=$HOST --build-arg PORT=$PORT --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
+    - /kaniko/executor --context . --dockerfile Dockerfile --build-arg SECRET_KEY=$SECRET_KEY --build-arg NAME=$NAME --build-arg USER_DB=$USER_DB --build-arg HOST=$HOST --build-arg PORT=$PORT --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
   only:
    - master
 #  - docker build --build-arg SECRET_KEY=$SECRET_KEY --build-arg NAME=$NAME --build-arg USER_DB=$USER_DB --build-arg HOST=$HOST --build-arg PORT=$PORT --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC -t whiteapp:latest .
