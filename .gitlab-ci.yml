@@ -84,7 +84,11 @@ generate_tag:
   only:
    - master
   script:
-    - echo export APPLICATION_TAG_VERSION=`python -c 'import renard_joint; print(whiteapp_python_django.__version__)'` >> build.env
+    - pip install pipenv
+    - apt update
+    - apt -y install libpq-dev gcc
+    - PIPENV_PIPFILE=whiteapp/Pipfile pipenv install --skip-lock
+    - echo export APPLICATION_TAG_VERSION=`python -c 'import whiteapp; print(whiteapp_python_django.__version__)'` >> build.env
 
 document:
   stage: document
