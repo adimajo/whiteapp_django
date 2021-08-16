@@ -25,7 +25,8 @@
     - chmod 700 ~/.ssh
     - ssh-keyscan gitlab.ca.cib >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    - apk add --no-cache git
+    - apt update
+    - apt install git
     - git config --global user.name "$GITLAB_USER_NAME"
     - git config --global user.email "$GITLAB_USER_EMAIL"
 
@@ -81,7 +82,6 @@ generate_tag:
   stage: versionning
   <<: *common_python
   <<: *common_tag
-  extends: .common_deploy
   only:
    - master
   script:
