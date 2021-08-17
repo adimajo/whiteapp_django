@@ -35,6 +35,7 @@ stages:
   - test
   - security
   - versionning
+  - sonar_check
   - document
   - build
   - deploy_dev
@@ -89,6 +90,23 @@ generate_tag:
     - apt -y install libpq-dev gcc
     - PIPENV_PIPFILE=whiteapp/Pipfile pipenv install --skip-lock
     - echo export APPLICATION_TAG_VERSION=`python -c 'import whiteapp; print(whiteapp.__version__)'` >> build.env
+
+quality_check:
+  stage: sonar_check
+  image:
+    name: docker-remote.registry.saas.cagip.group.gca/sonarsource/sonar-scanner-cli:4.2
+  <<: *common_tag
+  variables:
+    SONAR_TOKEN: "${BOOT_SONAR_TOKEN}"
+    SONAR_HOST_URL: "${BOOT_SONAR_INSTANCE}"
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
+    GIT_DEPTH: 0 # Tells git to fetch all the branches of the project, required by the analysis task
+  script:
+    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
+    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
+    - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
+  only:
+   - master
 
 document:
   stage: document

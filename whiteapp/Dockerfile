@@ -21,11 +21,11 @@ ENV TEST_STATIC ${TEST_STATIC}
 # copy project
 COPY . .
 
-EXPOSE 8000
+EXPOSE ${PORT}
 
 # install dependencies
 RUN apt update && pip install --upgrade pip && pip install pipenv
 RUN pipenv install
 RUN pipenv run python manage.py collectstatic --noinput
 RUN pipenv run python manage.py makemigrations
-CMD pipenv run python manage.py migrate && pipenv run python manage.py ensure_superuser --password=${PASSWORD} --username=${USER_DB} --email=Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr && pipenv run gunicorn DjangoSite.wsgi:application --bind 0.0.0.0:8000
+CMD pipenv run python manage.py migrate && pipenv run python manage.py ensure_superuser --password=${PASSWORD} --username=${USER_DB} --email=Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr && pipenv run gunicorn DjangoSite.wsgi:application --bind ${HOST}:${PORT}
