@@ -101,12 +101,14 @@ quality_check:
     SONAR_HOST_URL: "${BOOT_SONAR_INSTANCE}"
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
     GIT_DEPTH: 0 # Tells git to fetch all the branches of the project, required by the analysis task
+    SONAR_SCANNER_OPTS: "-Djavax.net.ssl.trustStore=certificates/cacerts"
   script:
     - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
     - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
     - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
   only:
    - master
+  allow_failure: true
 
 document:
   stage: document
