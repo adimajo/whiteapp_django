@@ -9,7 +9,6 @@ ARG PORT
 ARG TEST_DB
 ARG TEST_STATIC
 
-ENV the_proxy http://host.docker.internal:3128
 ENV SECRET_KEY ${SECRET_KEY}
 ENV NAME ${NAME}
 ENV USER_DB ${USER_DB}
@@ -25,9 +24,8 @@ COPY . .
 EXPOSE 8000
 
 # install dependencies
-RUN http_proxy=$the_proxy && https_proxy=$the_proxy && apt update && pip install --upgrade pip && pip install pipenv
-RUN http_proxy=$the_proxy && https_proxy=$the_proxy && pipenv install
-RUN echo $SECRET_KEY
+RUN apt update && pip install --upgrade pip && pip install pipenv
+RUN pipenv install
 RUN pipenv run python manage.py collectstatic --noinput
 RUN pipenv run python manage.py makemigrations
 CMD pipenv run python manage.py migrate && pipenv run python manage.py ensure_superuser --password=${PASSWORD} --username=${USER_DB} --email=Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr && pipenv run gunicorn DjangoSite.wsgi:application --bind 0.0.0.0:8000
