@@ -127,16 +127,6 @@ document:
       - docs/build/html
     expire_in: 1 week
 
-#build nginx:
-#  stage: build
-#  image:
-#    name: docker-remote.registry.saas.cagip.group.gca/kaniko-project/executor:debug-v1.0.0
-#    entrypoint: [""]
-#  script:
-#  - cd nginx
-#  - docker build -t whiteapp_nginx:latest .
-#  - docker save whiteapp_nginx:latest > whiteapp_nginx.tar
-
 build whiteapp:
   stage: build
   <<: *common_tag
@@ -147,29 +137,22 @@ build whiteapp:
     TEST_STATIC: 0
     TEST_DB: 1
   script:
-    - ls -al
     - . ./build.env
     - cd whiteapp
     - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"https://$BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY\":{\"auth\":\"$(echo -n $BOOT_ARTI_USER:$BOOT_ARTI_PASSWORD | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - |-
+       KANIKOPROXYBUILDARGS=""
+       KANIKOCFG="{\"auths\":{\"https://$BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY\":{\"auth\":\"$(echo -n $BOOT_ARTI_USER:$BOOT_ARTI_PASSWORD | base64 | tr -d '\n')\"}}}"
+       if [ "x${http_proxy}" != "x" -o "x${https_proxy}" != "x" ]; then
+         KANIKOCFG="${KANIKOCFG}, \"proxies\": { \"default\": { \"httpProxy\": \"${http_proxy}\", \"httpsProxy\": \"${https_proxy}\", \"noProxy\": \"${no_proxy}\"}}"
+         KANIKOPROXYBUILDARGS="--build-arg http_proxy=${http_proxy} --build-arg https_proxy=${https_proxy} --build-arg no_proxy=${no_proxy}"
+       fi
+       KANIKOCFG="${KANIKOCFG} }"
+       echo "${KANIKOCFG}" >> /kaniko/.docker/config.json
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt
-    - echo $SECRET_KEY
-    - echo $NAME
-    - echo $USER_DB
-    - echo $HOST
-    - echo $PORT
-    - echo $TEST_DB
-    - echo $TEST_STATIC
-    - echo $BOOT_ARTI_SCRATCH_REGISTRY
-    - echo $BOOT_ARTI_REGISTRY
-    - echo $BOOT_ARTI_REPO
-    - echo $APPLICATION_TAG_VERSION
-    - /kaniko/executor --context . --dockerfile Dockerfile --build-arg SECRET_KEY=$SECRET_KEY --build-arg NAME=$NAME --build-arg USER_DB=$USER_DB --build-arg HOST=$HOST --build-arg PORT=$PORT --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
+    - /kaniko/executor --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg SECRET_KEY=$SECRET_KEY --build-arg NAME=$NAME --build-arg USER_DB=$USER_DB --build-arg HOST=$HOST --build-arg PORT=$PORT --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
   only:
    - master
-#  - docker build --build-arg SECRET_KEY=$SECRET_KEY --build-arg NAME=$NAME --build-arg USER_DB=$USER_DB --build-arg HOST=$HOST --build-arg PORT=$PORT --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC -t whiteapp:latest .
-#  - docker run -d -p 8000:8000 whiteapp
-#  - docker save whiteapp:latest > whiteapp.tar
 
 deploy_dev:
   stage: deploy_dev
@@ -177,7 +160,7 @@ deploy_dev:
   <<: *common_tag
   <<: *common_deploy
   script:
-    - source build.env
+    - . ./build.env
     - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
     - git clone $BOOT_GITLAB_DEPLOY_REPO yaml_deploy_folder
     - cd yaml_deploy_folder/dev
@@ -205,7 +188,6 @@ deploy_dev:
 #    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
 #    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
 #    - 'curl -S -k -u ${CREDS} -XPOST https://$BOOT_ARTI_REGISTRY/api/docker/$SOURCE_REPO/v2/promote -H "Content-Type: application/json" -d"{\"targetRepo\":\"${TARGET_REPO}\",\"dockerRepository\":\"${BOOT_ARTI_REPO}\",\"tag\":\"${APPLICATION_TAG_VERSION}\",\"copy\":true}"'
-#
 #  only:
 #   - master
 #
@@ -228,7 +210,6 @@ deploy_dev:
 #        else
 #            echo "Nothing to push"
 #        fi
-#
 #  only:
 #   - master
 #
@@ -251,7 +232,6 @@ deploy_dev:
 #        else
 #            echo "Nothing to push"
 #        fi
-#
 #  only:
 #   - master
 #
@@ -268,7 +248,6 @@ deploy_dev:
 #    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
 #    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
 #    - docker-promote --tag=$APPLICATION_TAG_VERSION
-#
 #  only:
 #   - master
 #
@@ -304,7 +283,6 @@ deploy_dev:
 #        else
 #           echo "Nothing to push"
 #        fi
-#
 #  only:
 #   - master
 #
@@ -337,7 +315,6 @@ deploy_dev:
 #            git add -A
 #            git commit -m "Rollout version $APPLICATION_TAG_VERSION on production environment"
 #            git push
-#
 #        else
 #            echo "Nothing to push"
 #        fi
