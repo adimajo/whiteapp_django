@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.8.3
+FROM docker-remote.registry.saas.cagip.group.gca/library/python:3.8-slim
 
 ARG SECRET_KEY
 ARG NAME
