@@ -25,8 +25,7 @@
     - chmod 700 ~/.ssh
     - ssh-keyscan gitlab.ca.cib >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    - apt update
-    - apt install git
+    - apk add --no-cache git
     - git config --global user.name "$GITLAB_USER_NAME"
     - git config --global user.email "$GITLAB_USER_EMAIL"
 
