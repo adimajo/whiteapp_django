@@ -103,7 +103,7 @@ quality_check:
     GIT_DEPTH: 0 # Tells git to fetch all the branches of the project, required by the analysis task
     SONAR_SCANNER_OPTS: "-Djavax.net.ssl.trustStore=certificates/cacerts"
   script:
-    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
+    - . ./build.env
     - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
     - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
   only:
