@@ -24,7 +24,8 @@ COPY . .
 EXPOSE ${PORT}
 
 # install dependencies
-RUN apt update && pip install --upgrade pip && pip install pipenv
+RUN apt update && apt install -y libpq-dev
+RUN pip install --upgrade pip && pip install pipenv
 RUN pipenv install
 RUN pipenv run python manage.py collectstatic --noinput
 RUN pipenv run python manage.py makemigrations
