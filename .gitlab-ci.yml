@@ -39,9 +39,6 @@ stages:
   - build
   - deploy_dev
 
-variables:
-  the_proxy: "http://host.docker.internal:3128"
-
 lint:
   stage: lint
   <<: *common_python
@@ -107,7 +104,6 @@ quality_check:
     - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
   only:
    - master
-  allow_failure: true
 
 document:
   stage: document
