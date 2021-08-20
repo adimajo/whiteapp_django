@@ -29,7 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost",
                  "127.0.0.1",
-                 "*.k8s.caas.ca-sa.gca"]
+                 ".k8s.caas.ca-sa.gca"]
 
 # Application definition
 
