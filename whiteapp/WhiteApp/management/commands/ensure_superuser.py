@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
+from loguru import logger
 
 
 class Command(BaseCommand):
@@ -11,8 +12,13 @@ class Command(BaseCommand):
         parser.add_argument('--password', help="Admin's password")
 
     def handle(self, *args, **options):
+        logger.info('Trying to create a superuser.')
         user = get_user_model()
         if not user.objects.filter(username=options['username']).exists():
+            logger.info('Superuser ' + options['username'] + ' does not exist. Creating...')
             user.objects.create_superuser(username=options['username'],
                                           email=options['email'],
                                           password=options['password'])
+            logger.info('Superuser ' + options['username'] + ' created.')
+        else:
+            logger.info('Superuser ' + options['username'] + ' already exists.')
