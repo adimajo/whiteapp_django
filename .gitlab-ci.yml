@@ -129,7 +129,7 @@ build whiteapp:
     name: docker-remote.registry.saas.cagip.group.gca/kaniko-project/executor:debug-v1.0.0
     entrypoint: [""]
   variables:
-    TEST_STATIC: 0
+    TEST_STATIC: 1
     TEST_DB: 1
   script:
     - . ./build.env
