@@ -126,7 +126,7 @@ build whiteapp:
        KANIKOCFG="${KANIKOCFG} }"
        echo "${KANIKOCFG}" >> /kaniko/.docker/config.json
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt
-    - /kaniko/executor --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg SECRET_KEY=$SECRET_KEY --build-arg PASSWORD=&PASSWORD --build-arg NAME=$NAME --build-arg USER_DB=$USER_DB --build-arg HOST=$HOST --build-arg PORT=$PORT --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
+    - /kaniko/executor --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg SECRET_KEY=$SECRET_KEY --build-arg PASSWORD=$PASSWORD --build-arg NAME=$NAME --build-arg USER_DB=$USER_DB --build-arg HOST=$HOST --build-arg PORT=$PORT --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
   only:
    - master
 
