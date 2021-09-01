@@ -15,7 +15,7 @@ from markupsafe import Markup
 
 
 # ============================= Definition des classes  ================================================================
-class Accueil(LoginRequiredMixin, TemplateView):
+class Accueil(TemplateView):
     login_url = "/login/"
     redirect_field_name = "redirect_to"
     template_name = "Accueil.html"
@@ -24,7 +24,7 @@ class Accueil(LoginRequiredMixin, TemplateView):
         return render(request, self.template_name, {})
 
 
-class AccueilVue(LoginRequiredMixin, TemplateView):
+class AccueilVue(TemplateView):
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
 
