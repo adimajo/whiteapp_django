@@ -147,8 +147,8 @@ if TEST_STATIC:
         os.path.join(BASE_DIR, 'static'),
     )
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-    STATIC_URL = os.path.join(BASE_DIR, 'static')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+    STATIC_URL = os.path.join(BASE_DIR, 'static/')
 
 LOGIN_REDIRECT_URL = 'Accueil'
 LOGOUT_REDIRECT_URL = 'Accueil'
