@@ -6,8 +6,6 @@
 
 <html lang="fr">
 <head>
-
-
     <meta charset="utf-8"/>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
@@ -1361,6 +1359,17 @@
 
     </style>
 
+
+    <style>
+        .real_foot_element {
+            width:100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+     </style>
+
     <!-- All -->
     <style>
     * {
@@ -2230,7 +2239,6 @@
     </style>
 
     <style>
-
         .add_comments{
             cursor:pointer;
         }
@@ -2410,8 +2418,11 @@
             <div class="row">
                 <a class="col-5 col-sm-3" href="https://adimajo.github.io/seminaire_gro"><img
                         alt="gca" class="rounded img-fluid" src="static/gro.png"/></a>
-                <h1 class="text-right text-wrap col-7 col-sm-9"> {% block title %} WhiteApp Python Django by GRO {%
-                    endblock %}</h1>
+                <h1 class="text-right text-wrap col-7 col-sm-9">
+                    {% block title %}
+                        WhiteApp Python Django by GRO
+                    {% endblock %}
+                </h1>
             </div>
 
 
@@ -2436,7 +2447,7 @@
             {% block tabs %}
             <div class="foot_element">
                 <p class="row" id="p-tabs">
-                    <a class="col-4 tab" href="{% url 'Accueil' %}" v-bind:class="{clair: !active_accueil}"
+                    <a class="col-4 tab" href="{% url 'Accueil' %}"
                        v-bind:class="{active: active_accueil}">
                         Accueil
                     </a>
