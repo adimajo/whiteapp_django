@@ -29,7 +29,7 @@ RUN apt update \
 && pip install --upgrade pip \
 && pip install pipenv \
 && pipenv install \
-&& pipenv run python manage.py collectstatic --noinput \
+&& pipenv run python manage.py collectstatic --noinput --clear \
 && pipenv run python manage.py makemigrations
 
 CMD pipenv run python manage.py migrate && pipenv run python manage.py ensure_superuser --password=${PASSWORD} --username=${USER_DB} --email=Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr && pipenv run gunicorn DjangoSite.wsgi:application --bind 0.0.0.0:8000
