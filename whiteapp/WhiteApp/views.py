@@ -12,10 +12,7 @@ from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from pip._internal.operations.freeze import freeze
 from markupsafe import Markup
-from logger_mig import MyPrinter
-
-
-logger = MyPrinter()
+import logging as logger
 
 # ============================= Definition des classes  ================================================================
 class Accueil(TemplateView):
@@ -32,7 +29,7 @@ class AccueilVue(TemplateView):
     redirect_field_name = 'redirect_to'
 
     def post(self, request):
-        logger.info("POST : IN : request : {}".format(request))
+        logger.warning("POST : IN : request : {}".format(request))
 
         result = {"messages": []}
 
@@ -77,6 +74,6 @@ class AccueilVue(TemplateView):
             "msg": "Succès",
             "type": "alert-success"})
 
-        logger.info("POST : OUT : request : {}".format(result))
+        logger.warning("POST : OUT : request : {}".format(result))
 
         return JsonResponse(result, status=202)
