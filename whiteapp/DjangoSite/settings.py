@@ -141,14 +141,8 @@ try:
 except ValueError:
     TEST_STATIC = False
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
-if TEST_STATIC:
-    STATICFILES_DIRS = (
-        os.path.join(BASE_DIR, 'static'),
-    )
-else:
-    STATIC_ROOT = '/static/'
-    STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = 'Accueil'
 LOGOUT_REDIRECT_URL = 'Accueil'
