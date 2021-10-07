@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from loguru import logger
 
+SUPERUSER_ = 'Superuser '
+
 
 class Command(BaseCommand):
     help = "Creates an admin user non-interactively if it doesn't exist"
@@ -15,10 +17,10 @@ class Command(BaseCommand):
         logger.info('Trying to create a superuser.')
         user = get_user_model()
         if not user.objects.filter(username=options['username']).exists():
-            logger.info('Superuser ' + options['username'] + ' does not exist. Creating...')
+            logger.info(SUPERUSER_ + options['username'] + ' does not exist. Creating...')
             user.objects.create_superuser(username=options['username'],
                                           email=options['email'],
                                           password=options['password'])
-            logger.info('Superuser ' + options['username'] + ' created.')
+            logger.info(SUPERUSER_ + options['username'] + ' created.')
         else:
-            logger.info('Superuser ' + options['username'] + ' already exists.')
+            logger.info(SUPERUSER_ + options['username'] + ' already exists.')
