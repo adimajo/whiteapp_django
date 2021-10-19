@@ -12,10 +12,10 @@ from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from pip._internal.operations.freeze import freeze
 from markupsafe import Markup
-
+import logging as logger
 
 # ============================= Definition des classes  ================================================================
-class Accueil(LoginRequiredMixin, TemplateView):
+class Accueil(TemplateView):
     login_url = "/login/"
     redirect_field_name = "redirect_to"
     template_name = "Accueil.html"
@@ -24,11 +24,13 @@ class Accueil(LoginRequiredMixin, TemplateView):
         return render(request, self.template_name, {})
 
 
-class AccueilVue(LoginRequiredMixin, TemplateView):
+class AccueilVue(TemplateView):
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
 
     def post(self, request):
+        logger.warning("POST : IN : request : {}".format(request))
+
         result = {"messages": []}
 
         request_dict = request.POST.dict()
@@ -71,5 +73,7 @@ class AccueilVue(LoginRequiredMixin, TemplateView):
         result["messages"].append({
             "msg": "Succès",
             "type": "alert-success"})
+
+        logger.warning("POST : OUT : request : {}".format(result))
 
         return JsonResponse(result, status=202)

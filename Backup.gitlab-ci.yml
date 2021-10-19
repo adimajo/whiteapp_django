@@ -59,11 +59,9 @@ test:
     - pip install pipenv
     - apt update
     - apt -y install libpq-dev gcc
-    - export PIPENV_PIPFILE=whiteapp/Pipfile
-    - pipenv install -d
-    - pipenv run coverage run --source whiteapp/ -m pytest
-    - pipenv run coverage report
-    - pipenv run coverage xml
+    - PIPENV_PIPFILE=whiteapp/Pipfile pipenv install -d
+    - PIPENV_PIPFILE=whiteapp/Pipfile pipenv run coverage run --source whiteapp/ -m pytest
+    - PIPENV_PIPFILE=whiteapp/Pipfile pipenv run coverage report
 
 security:
   stage: security
@@ -92,21 +90,18 @@ generate_tag:
 quality_check:
   stage: sonar_check
   image:
-    name: docker-remote.registry.saas.cagip.group.gca/sonarsource/sonar-scanner-cli:4.6
+    name: docker-remote.registry.saas.cagip.group.gca/sonarsource/sonar-scanner-cli:4.2
   <<: *common_tag
   variables:
     SONAR_TOKEN: "${BOOT_SONAR_TOKEN}"
     SONAR_HOST_URL: "${BOOT_SONAR_INSTANCE}"
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
     GIT_DEPTH: 0 # Tells git to fetch all the branches of the project, required by the analysis task
-    SONAR_SCANNER_OPTS: "-Djavax.net.ssl.trustStore=cacerts"
+    SONAR_SCANNER_OPTS: "-Djavax.net.ssl.trustStore=certificates/cacerts"
   script:
     - . ./build.env
     - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
-    - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> cacreditagricoleserver.crt
-    - apk --update add java-common
-    - keytool -import -alias mycert -file cacreditagricoleserver.crt -storetype jks -trustcacerts -noprompt -keypass keypass -keystore cacerts -storepass test@123
-    - sonar-scanner -Dsonar.exclusions=tests/**,coverage.xml,setup.py -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
+    - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
   only:
    - master
 
@@ -150,7 +145,7 @@ build whiteapp:
        KANIKOCFG="${KANIKOCFG} }"
        echo "${KANIKOCFG}" >> /kaniko/.docker/config.json
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt
-    - /kaniko/executor --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg SECRET_KEY=$SECRET_KEY --build-arg PASSWORD=$PASSWORD --build-arg NAME=$NAME --build-arg USER_DB=$USER_DB --build-arg HOST=$HOST --build-arg PORT=$PORT --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
+    - /kaniko/executor --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg SECRET_KEY=$SECRET_KEY --build-arg NAME=$NAME --build-arg USER_DB=$USER_DB --build-arg HOST=$HOST --build-arg PORT=$PORT --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
   only:
    - master
 
