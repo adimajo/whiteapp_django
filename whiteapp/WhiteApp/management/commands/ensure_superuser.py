@@ -5,7 +5,7 @@ from loguru import logger
 SUPERUSER_ = 'Superuser '
 
 
-class Command(BaseCommand):
+class Command(BaseCommand):  # pragma: no cover
     help = "Creates an admin user non-interactively if it doesn't exist"
 
     def add_arguments(self, parser):
