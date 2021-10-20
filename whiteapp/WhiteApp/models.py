@@ -23,10 +23,6 @@ def _generate_unique_uri():
 
 
 # ============================= Definition des classes =================================================================
-class DateInput(forms.DateInput):
-    input_type = 'date'
-
-
 class WhiteApp(models.Model):
     created_at = models.DateTimeField(creation_date_name, auto_now_add=True)
     updated_at = models.DateTimeField(updated_at_name, auto_now=True)
