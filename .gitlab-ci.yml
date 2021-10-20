@@ -52,6 +52,9 @@ lint:
     - flake8 --ignore=W504 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
 
 test:
+  artifacts:
+    paths:
+      - coverage.xml
   stage: test
   <<: *common_python
   <<: *common_tag
@@ -106,7 +109,7 @@ quality_check:
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> cacreditagricoleserver.crt
     - apk --update add java-common
     - keytool -import -alias mycert -file cacreditagricoleserver.crt -storetype jks -trustcacerts -noprompt -keypass keypass -keystore cacerts -storepass test@123
-    - sonar-scanner -Dsonar.exclusions=tests/**,coverage.xml,setup.py -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
+    - sonar-scanner -Dsonar.exclusions=tests/**,docs/**,coverage.xml,setup.py -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
   only:
    - master
 
