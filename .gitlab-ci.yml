@@ -115,13 +115,27 @@ document:
   <<: *common_python
   <<: *common_tag
   script:
+    - . ./build.env
     - pip install pipenv
     - apt update
     - apt install -y make libpq-dev gcc
     - cd docs
-    - PIPENV_PIPFILE=../whiteapp/Pipfile pipenv install -d
-    - PIPENV_PIPFILE=../whiteapp/Pipfile pipenv run make clean
-    - PIPENV_PIPFILE=../whiteapp/Pipfile pipenv run make html
+    - export PIPENV_PIPFILE=../whiteapp/Pipfile
+    - pipenv install -d
+    - pipenv run make clean
+    - pipenv run make html
+    - git config --global user.name "$GITLAB_USER_NAME"
+    - git clone https://$GITLAB_USER_NAME:$BOOT_GITLAB_TOKEN@$BOOT_GITLAB_DOCS_REPO docs_to_publish
+    - rm -rf docs_to_publish/public
+    - mkdir docs_to_publish/public
+    - cp docs/build/html/* docs_to_publish/public/
+    - |-
+        if ! git diff-index --quiet HEAD --; then
+            git commit -am "Rollout version $APPLICATION_TAG_VERSION"
+            git push
+        else
+            echo "Nothing to push"
+        fi
   artifacts:
     paths:
       - docs/build/html
