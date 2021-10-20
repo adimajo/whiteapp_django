@@ -12,3 +12,4 @@ def test_whiteapp():
     from whiteapp.WhiteApp import urls, utils
     from whiteapp import manage
     from whiteapp.DjangoSite import Singleton, urls, wsgi
+    utils._generate
