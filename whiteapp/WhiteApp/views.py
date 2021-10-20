@@ -6,13 +6,13 @@ import re
 import sys
 
 import pandas as pd
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from pip._internal.operations.freeze import freeze
 from markupsafe import Markup
 import logging as logger
+
 
 # ============================= Definition des classes  ================================================================
 class Accueil(TemplateView):
@@ -38,7 +38,8 @@ class AccueilVue(TemplateView):
         if "init" in request_dict:
             result['user'] = None
 
-        with codecs.open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "__init__.py"), 'r') as fp:
+        with codecs.open(os.path.join(os.path.dirname(
+                os.path.dirname(os.path.abspath(__file__))), "__init__.py"), 'r') as fp:
             version_file = fp.read()
 
         version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M)
@@ -68,7 +69,8 @@ class AccueilVue(TemplateView):
             "Unknown"
         result['requirements'] = Markup(pd.DataFrame(list(
             map(lambda x: x.split('=='), freeze(local_only=True))
-        ), columns=['package', 'version']).style.set_table_styles([cell, cell_hover, index_names, headers]).hide_index().to_html())
+        ), columns=['package', 'version']).style.set_table_styles(
+            [cell, cell_hover, index_names, headers]).hide_index().to_html())
 
         result["messages"].append({
             "msg": "Succès",

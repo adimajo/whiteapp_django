@@ -4,8 +4,6 @@ from django.urls import path
 
 from . import views
 
-# ============================= Definition des classes =================================================================
-
 # ============================= Definition des variables ===============================================================
 app_name = 'WhiteApp'
 urlpatterns = [
