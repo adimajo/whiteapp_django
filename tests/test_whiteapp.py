@@ -9,7 +9,7 @@ if os.environ.get('DJANGO_SETTINGS_MODULE') is None:
 
 def test_whiteapp():
     django.setup()
-    from whiteapp.WhiteApp import urls, utils
+    from whiteapp.WhiteApp import apps, urls, views
+    from whiteapp.WhiteApp.management.commands import ensure_superuser
     from whiteapp import manage
     from whiteapp.DjangoSite import Singleton, urls, wsgi
-    utils._generate
