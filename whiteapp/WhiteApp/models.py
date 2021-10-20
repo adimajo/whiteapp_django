@@ -22,25 +22,6 @@ def _generate_unique_uri():
     return str(uuid4()).replace("-", "")[:15]
 
 
-def upper_firt_letter(word):
-    try:
-        return " ".join([x[:1].upper() + x[1:].lower() for x in word.split(" ")])
-    except AttributeError:
-        return word
-
-
-def clean_siren(siren: str):
-    try:
-        siren = int(siren)
-    except ValueError:
-        siren = ""
-    return ("0" * 9 + str(siren))[-9:]
-
-
-def arg_is_yes(x):
-    return x in ["True", True, "true", 1, "Oui", "oui", "O", "y", "YES", "yes", "Yes"]
-
-
 # ============================= Definition des classes =================================================================
 class DateInput(forms.DateInput):
     input_type = 'date'
@@ -70,10 +51,7 @@ class WhiteApp(models.Model):
             result["comments"] = [commentaire.to_dict() for commentaire in self.comments.all()]
         if with_events:
             result["evts"] = [evt.to_Accueil_view() for evt in self.evts.all()]
-        result.update({"uri": self.uri,
-                       "nb_notations": self.nb_notations,
-                       "promoteur__uri": self.promoteur.uri, "statut": self.statut,
-                       "promoteur__nom_promoteur": self.promoteur.nom_promoteur})
+        result.update({"uri": self.uri})
 
         result.update(kwargs)
         return result
@@ -90,8 +68,7 @@ class WhiteApp(models.Model):
     def __str__(self):
         return "{} - ({})".format(self.nom_projet, self.uri)
 
-    def save(self, addok=True, *args, **kwargs):
-        self.nom_projet = upper_firt_letter(self.nom_projet)
+    def save(self, *args, **kwargs):
         super(WhiteApp, self).save(*args, **kwargs)
 
 
