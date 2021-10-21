@@ -128,10 +128,10 @@ document:
     - pipenv run make clean
     - pipenv run make html
     - git config --global user.name "$GITLAB_USER_NAME"
-    - git clone https://$GITLAB_USER_NAME:$BOOT_GITLAB_TOKEN@$BOOT_GITLAB_DOCS_REPO docs_to_publish
-    - rm -rf docs_to_publish/public
-    - mkdir docs_to_publish/public
-    - cp docs/build/html/* docs_to_publish/public/
+    - git clone https://${GITLAB_USER_NAME}:${BOOT_GITLAB_TOKEN}@${BOOT_GITLAB_DOCS_REPO}
+    - rm -rf whiteapp_python_django_docs/public
+    - mkdir whiteapp_python_django_docs/public
+    - cp docs/build/html/* whiteapp_python_django_docs/public/
     - |-
         if ! git diff-index --quiet HEAD --; then
             git commit -am "Rollout version $APPLICATION_TAG_VERSION"
