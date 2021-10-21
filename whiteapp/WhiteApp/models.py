@@ -6,7 +6,6 @@ Django models
 # Gestion des données
 from uuid import uuid4
 
-from django import forms
 # Package Django
 from django.db import models
 from django.forms import ModelForm
