@@ -123,7 +123,7 @@ document:
     - apt update
     - apt install -y make libpq-dev gcc git wget
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> cacreditagricoleserver.crt
-    - cat cacreditagricoleserver.crt >> `git config --get http.sslCAInfo`
+    - cat cacreditagricoleserver.crt >> $(git config --get http.sslCAInfo)
     - cd docs
     - export PIPENV_PIPFILE=../whiteapp/Pipfile
     - pipenv install -d
