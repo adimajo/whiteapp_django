@@ -121,7 +121,7 @@ document:
     - . ./build.env
     - pip install pipenv
     - apt update
-    - apt install -y make libpq-dev gcc
+    - apt install -y make libpq-dev gcc git
     - cd docs
     - export PIPENV_PIPFILE=../whiteapp/Pipfile
     - pipenv install -d
