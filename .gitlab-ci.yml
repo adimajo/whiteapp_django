@@ -121,17 +121,13 @@ document:
     - . ./build.env
     - pip install pipenv
     - apt update
-    - apt install -y make libpq-dev gcc git wget
-    - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> cacreditagricoleserver.crt
-#    - git config --global http.sslCAInfo cacreditagricoleserver.crt
-#    - export output_file=`git config --get http.sslCAInfo`
-#    - echo $output_file
-#    - cat cacreditagricoleserver.crt >> "${output_file}"
+    - apt install -y make libpq-dev gcc git
     - cd docs
     - export PIPENV_PIPFILE=../whiteapp/Pipfile
     - pipenv install -d
     - pipenv run make clean
     - pipenv run make html
+    - git config --global http.sslverify false
     - git config --global user.name "$GITLAB_USER_NAME"
     - git clone https://${BOOT_GITLAB_SRV_ACCOUNT}:${BOOT_GITLAB_TOKEN}@${BOOT_GITLAB_DOCS_REPO} docs_to_publish
     - rm -rf docs_to_publish/public
