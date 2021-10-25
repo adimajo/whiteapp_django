@@ -130,7 +130,7 @@ document:
     - git config --global http.sslverify false
     - git config --global user.name "$GITLAB_USER_NAME"
     - git config --global http.emptyAuth true
-    - git clone https://${BOOT_GITLAB_SRV_ACCOUNT}:${BOOT_GITLAB_TOKEN}@${BOOT_GITLAB_DOCS_REPO} docs_to_publish
+    - git clone https://$BOOT_GITLAB_SRV_ACCOUNT:$BOOT_GITLAB_TOKEN@$BOOT_GITLAB_DOCS_REPO docs_to_publish
     - rm -rf docs_to_publish/public
     - mkdir docs_to_publish/public
     - cp docs/build/html/* docs_to_publish/public/
