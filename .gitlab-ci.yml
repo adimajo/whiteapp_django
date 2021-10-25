@@ -132,7 +132,7 @@ document:
     - git clone https://$BOOT_GITLAB_SRV_ACCOUNT:$BOOT_GITLAB_CAGIP_TOKEN@$BOOT_GITLAB_DOCS_REPO docs_to_publish
     - rm -rf docs_to_publish/public
     - mkdir docs_to_publish/public
-    - cp build/html/* docs_to_publish/public/
+    - cp -r build/html/* docs_to_publish/public/
     - cd docs_to_publish
     - |-
         if ! git diff-index --quiet HEAD --; then
