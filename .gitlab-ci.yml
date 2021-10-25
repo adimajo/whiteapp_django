@@ -135,6 +135,7 @@ document:
     - mkdir docs_to_publish/public
     - cp -r build/html/* docs_to_publish/public/
     - cd docs_to_publish
+    - git add -a
     - |-
         if ! git diff-index --quiet HEAD --; then
             git commit -am "Rollout version $APPLICATION_TAG_VERSION"
