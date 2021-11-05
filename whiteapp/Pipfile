@@ -13,7 +13,7 @@ numpydoc = "*"
 bandit = "*"
 
 [packages]
-psycopg2 = "*"
+psycopg2-binary = "*"
 django = "*"
 django_import_export = "*"
 django-widget-tweaks = "*"
