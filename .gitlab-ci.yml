@@ -140,7 +140,7 @@ document:
     - . ./build.env
     - pip install pipenv
     - apt update
-    - apt install -y make libpq-dev gcc git
+    - apt install -y make libpq-dev gcc git python3-sphinx
     - cd docs
     - export PIPENV_PIPFILE=../whiteapp/Pipfile
     - pipenv install -d --skip-lock
