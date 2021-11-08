@@ -65,7 +65,7 @@ test:
   <<: *common_python
   <<: *common_tag
   script:
-    - pip install pipenv
+    - pip install pipenv==2021.5.29
     - apt update
     - apt -y install libpq-dev gcc
     - export PIPENV_PIPFILE=whiteapp/Pipfile
@@ -105,7 +105,7 @@ generate_tag:
   only:
    - master
   script:
-    - pip install pipenv
+    - pip install pipenv==2021.5.29
     - apt update
     - apt -y install libpq-dev gcc
     - PIPENV_PIPFILE=whiteapp/Pipfile pipenv install --skip-lock
@@ -138,9 +138,9 @@ document:
   <<: *common_tag
   script:
     - . ./build.env
-    - pip install pipenv
+    - pip install pipenv==2021.5.29
     - apt update
-    - apt install -y make libpq-dev gcc git python3-sphinx
+    - apt install -y make libpq-dev gcc git
     - cd docs
     - export PIPENV_PIPFILE=../whiteapp/Pipfile
     - pipenv install -d --skip-lock
