@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'DjangoSite.wsgi.application'
 try:
     TEST_DB = bool(int(os.environ.get('TEST_DB', True)))
 except ValueError:
-    TEST_DB = False
+    TEST_DB = True
 
 if TEST_DB:
     DATABASES = {
