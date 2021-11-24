@@ -11,8 +11,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
-import os
 import mimetypes
+import os
+
+from loguru import logger
+
 mimetypes.add_type("text/css", ".css", True)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -80,11 +83,12 @@ WSGI_APPLICATION = 'DjangoSite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 try:
-    TEST_DB = bool(int(os.environ.get('TEST_DB', True)))
+    TEST_DB = bool(int(os.environ.get('TEST_DB', False)))
 except ValueError:
-    TEST_DB = True
+    TEST_DB = False
 
 if TEST_DB:
+    logger.info('Testing with local sqlite3')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -92,6 +96,7 @@ if TEST_DB:
         }
     }
 else:
+    logger.info('Attempting to connect to pgsql database')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',

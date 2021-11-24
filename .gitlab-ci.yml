@@ -38,6 +38,8 @@ stages:
   - document
   - build
   - deploy_dev
+  - promote_staging
+  - promote_stable
 
 lint:
   stage: lint
@@ -194,7 +196,7 @@ build whiteapp:
        KANIKOCFG="${KANIKOCFG} }"
        echo "${KANIKOCFG}" >> /kaniko/.docker/config.json
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt
-    - /kaniko/executor --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg SECRET_KEY=$SECRET_KEY --build-arg PASSWORD=$PASSWORD --build-arg APP_USER=$APP_USER --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
+    - /kaniko/executor --cache=true --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg SECRET_KEY=$SECRET_KEY --build-arg PASSWORD=$PASSWORD --build-arg APP_USER=$APP_USER --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
   only:
     refs:
       - master
@@ -223,22 +225,22 @@ deploy_dev:
   only:
    - master
 
-#promote_staging:
-#  stage: promote_staging
-#  when: manual
-#  <<: *ci_tools
-#  <<: *common_tag
-#  variables:
-#    CREDS: "${BOOT_ARTI_USER}:${BOOT_ARTI_PASSWORD}"
-#    SOURCE_REPO: "${BOOT_ARTI_SCRATCH_REGISTRY}"
-#    TARGET_REPO: "${BOOT_ARTI_STAGING_REGISTRY}"
-#  script:
-#    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
-#    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
-#    - 'curl -S -k -u ${CREDS} -XPOST https://$BOOT_ARTI_REGISTRY/api/docker/$SOURCE_REPO/v2/promote -H "Content-Type: application/json" -d"{\"targetRepo\":\"${TARGET_REPO}\",\"dockerRepository\":\"${BOOT_ARTI_REPO}\",\"tag\":\"${APPLICATION_TAG_VERSION}\",\"copy\":true}"'
-#  only:
-#   - master
-#
+promote_staging:
+  stage: promote_staging
+  when: manual
+  <<: *ci_tools
+  <<: *common_tag
+  variables:
+    CREDS: "${BOOT_ARTI_USER}:${BOOT_ARTI_PASSWORD}"
+    SOURCE_REPO: "${BOOT_ARTI_SCRATCH_REGISTRY}"
+    TARGET_REPO: "${BOOT_ARTI_STAGING_REGISTRY}"
+  script:
+    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
+    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
+    - 'curl -S -k -u ${CREDS} -XPOST https://$BOOT_ARTI_REGISTRY/api/docker/$SOURCE_REPO/v2/promote -H "Content-Type: application/json" -d"{\"targetRepo\":\"${TARGET_REPO}\",\"dockerRepository\":\"${BOOT_ARTI_REPO}\",\"tag\":\"${APPLICATION_TAG_VERSION}\",\"copy\":true}"'
+  only:
+   - master
+
 #deploy_int:
 #  stage: deploy_int
 #  when: manual
@@ -282,23 +284,23 @@ deploy_dev:
 #        fi
 #  only:
 #   - master
-#
-#promote_stable:
-#  stage: promote_stable
-#  when: manual
-#  <<: *ci_tools
-#  <<: *common_tag
-#  variables:
-#    SOURCE_REPO: "${BOOT_ARTI_STAGING_REGISTRY}"
-#    TARGET_REPO: "${BOOT_ARTI_STABLE_REGISTRY}"
-#    IMAGE: "${BOOT_ARTI_REPO}"
-#  script:
-#    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
-#    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
-#    - docker-promote --tag=$APPLICATION_TAG_VERSION
-#  only:
-#   - master
-#
+
+promote_stable:
+  stage: promote_stable
+  when: manual
+  <<: *ci_tools
+  <<: *common_tag
+  variables:
+    SOURCE_REPO: "${BOOT_ARTI_STAGING_REGISTRY}"
+    TARGET_REPO: "${BOOT_ARTI_STABLE_REGISTRY}"
+    IMAGE: "${BOOT_ARTI_REPO}"
+  script:
+    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
+    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
+    - docker-promote --tag=$APPLICATION_TAG_VERSION
+  only:
+   - master
+
 #deploy_preprod:
 #  stage: deploy_pprd
 #  when: manual
