@@ -31,21 +31,16 @@ class WhiteApp(models.Model):
     layout = {"Informations générales": ["nom_projet"]}
 
     @property
-    def nb_notations(self):
-        return self.evts.all().count()
+    def exemple_propriete(self):
+        return self.nom_projet
 
-    def to_dict(self, with_comments=False, with_events=False, **kwargs):
+    def to_dict(self, **kwargs):
         """
         Turns itself into a dict (easily readable)
         :return:
         :rtype: dict
         """
-        result = {v: self.__getattribute__(v) for k, variables in self.layout.items() for v in variables
-                  if v not in ["promoteur"]}
-        if with_comments:
-            result["comments"] = [commentaire.to_dict() for commentaire in self.comments.all()]
-        if with_events:
-            result["evts"] = [evt.to_Accueil_view() for evt in self.evts.all()]
+        result = {v: self.__getattribute__(v) for k, v in self.layout.items()}
         result.update({"uri": self.uri})
 
         result.update(kwargs)
@@ -57,7 +52,7 @@ class WhiteApp(models.Model):
         :return:
         :rtype: dict
         """
-        result = self.to_dict(with_events=True, with_comments=True, **kwargs)
+        result = self.to_dict(**kwargs)
         return result
 
     def __str__(self):

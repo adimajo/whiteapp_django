@@ -27,10 +27,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', '')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', False)
+DEBUG = os.environ.get('DEBUG', True)
 
 ALLOWED_HOSTS = ["localhost",
                  "127.0.0.1",
@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'DjangoSite.urls'
@@ -100,11 +101,14 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ.get('NAME', 'django_db'),
-            'USER': os.environ.get('USER_DB', 'django'),
-            'PASSWORD': os.environ.get('PASSWORD', ''),
-            'HOST': os.environ.get('HOST', ''),
-            'PORT': os.environ.get('PORT', ''),
+            'OPTIONS': {
+                'options': '-c search_path={}'.format(os.environ.get('POSTGRES_SCHEMA'))
+            },
+            'NAME': os.environ.get('POSTGRES_MASTER_DB'),
+            'USER': os.environ.get('POSTGRES_MASTER_USER'),
+            'PASSWORD': os.environ.get('POSTGRES_MASTER_PASSWORD'),
+            'HOST': os.environ.get('POSTGRES_URL'),
+            'PORT': os.environ.get('POSTGRES_PORT'),
         }
     }
 
@@ -148,6 +152,7 @@ except ValueError:
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 LOGIN_REDIRECT_URL = 'Accueil'
 LOGOUT_REDIRECT_URL = 'Accueil'
