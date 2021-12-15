@@ -23,7 +23,9 @@ ENV APP_USER ${APP_USER}
 ENV PASSWORD ${PASSWORD}
 
 # copy project
-COPY . .
+COPY . ./whiteapp
+
+RUN chown nobody:nogroup ./whiteapp
 
 EXPOSE 8000
 
@@ -32,11 +34,10 @@ RUN apt update \
 && apt install -y libpq-dev gcc \
 && pip install --upgrade pip \
 && pip install pipenv \
-&& pipenv install \
-&& pipenv run python manage.py collectstatic --noinput \
-&& pipenv run python manage.py makemigrations
-
-RUN chown nobody:nogroup /whiteapp
+&& cd whiteapp \
+&& pipenv install --system --deploy \
+&& python manage.py collectstatic --noinput \
+&& python manage.py makemigrations
 
 USER nobody
 
