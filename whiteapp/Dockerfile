@@ -31,7 +31,7 @@ EXPOSE 8000
 
 # install dependencies
 RUN apt update \
-&& apt install -y libpq-dev gcc \
+&& apt install -y libpq-dev gcc postgresql \
 && pip install --upgrade pip \
 && pip install pipenv \
 && cd whiteapp \
