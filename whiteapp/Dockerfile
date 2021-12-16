@@ -39,9 +39,10 @@ RUN apt update \
 && python manage.py collectstatic --noinput \
 && python manage.py makemigrations
 
+RUN su -m postgres -c "psql -h ${POSTGRES_URL} -p ${POSTGRES_PORT} -U ${POSTGRES_MASTER_USER} -d ${POSTGRES_MASTER_DB} -tc \"CREATE SCHEMA IF NOT EXISTS ${POSTGRES_SCHEMA}\""
+
 USER nobody
 
-ENTRYPOINT su -m postgres -c "psql -h ${POSTGRES_URL} -p ${POSTGRES_PORT} -U ${POSTGRES_MASTER_USER} -d ${POSTGRES_MASTER_DB} -tc \"CREATE SCHEMA IF NOT EXISTS ${POSTGRES_SCHEMA}\"" \
-&& python manage.py migrate \
+ENTRYPOINT python manage.py migrate \
 && python manage.py ensuresuperuser --password=${PASSWORD} --username=${APP_USER} --email=Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr \
 && gunicorn DjangoSite.wsgi:application --bind 0.0.0.0:8000 --worker-class=gevent
