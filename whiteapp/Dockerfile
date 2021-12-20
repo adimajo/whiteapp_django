@@ -37,9 +37,9 @@ RUN apt update \
 && python manage.py collectstatic --noinput \
 && python manage.py makemigrations
 
-RUN useradd -r -s /bin/bash -g postgres whiteappuser
+RUN useradd -r -s /bin/bash -g sudo whiteappuser
 
-RUN chown whiteappuser:postgres ./whiteapp
+RUN chown whiteappuser ./whiteapp
 
 USER whiteappuser
 
