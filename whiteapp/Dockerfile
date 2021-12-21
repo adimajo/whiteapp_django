@@ -43,7 +43,7 @@ RUN usermod -aG postgres whiteappuser
 
 USER whiteappuser
 
-ENTRYPOINT sudo su -m postgres -c "psql -h ${POSTGRES_URL} -p ${POSTGRES_PORT} -U ${POSTGRES_MASTER_USER} -d ${POSTGRES_MASTER_DB} -tc \"CREATE SCHEMA IF NOT EXISTS ${POSTGRES_SCHEMA}\"" \
+ENTRYPOINT su -m postgres -c "psql -h ${POSTGRES_URL} -p ${POSTGRES_PORT} -U ${POSTGRES_MASTER_USER} -d ${POSTGRES_MASTER_DB} -tc \"CREATE SCHEMA IF NOT EXISTS ${POSTGRES_SCHEMA}\"" \
 && python manage.py migrate \
 && python manage.py ensuresuperuser --password=${PASSWORD} --username=${APP_USER} --email=Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr \
 && gunicorn DjangoSite.wsgi:application --bind 0.0.0.0:8000 --worker-class=gevent
