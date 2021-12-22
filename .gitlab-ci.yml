@@ -1,6 +1,6 @@
 .common_python: &common_python
   image:
-    name: docker-remote.registry.saas.cagip.group.gca/library/python:3.8-slim
+    name: ${DOCKER_REGISTRY}python:3.8-slim
 
 .ci_tools: &ci_tools
   image:
@@ -197,7 +197,7 @@ build whiteapp:
        KANIKOCFG="${KANIKOCFG} }"
        echo "${KANIKOCFG}" >> /kaniko/.docker/config.json
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt
-    - /kaniko/executor --cache=true --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg POSTGRES_MASTER_DB=$POSTGRES_MASTER_DB --build-arg POSTGRES_MASTER_USER=$POSTGRES_MASTER_USER --build-arg POSTGRES_MASTER_PASSWORD=$POSTGRES_MASTER_PASSWORD --build-arg POSTGRES_SCHEMA=$POSTGRES_SCHEMA --build-arg POSTGRES_PORT=$POSTGRES_PORT --build-arg POSTGRES_URL=$POSTGRES_URL --build-arg PASSWORD=$PASSWORD --build-arg APP_USER=$APP_USER --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
+    - /kaniko/executor --cache=true --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg DOCKER_REGISTRY=$DOCKER_REGISTRY --build-arg POSTGRES_MASTER_DB=$POSTGRES_MASTER_DB --build-arg POSTGRES_MASTER_USER=$POSTGRES_MASTER_USER --build-arg POSTGRES_MASTER_PASSWORD=$POSTGRES_MASTER_PASSWORD --build-arg POSTGRES_SCHEMA=$POSTGRES_SCHEMA --build-arg POSTGRES_PORT=$POSTGRES_PORT --build-arg POSTGRES_URL=$POSTGRES_URL --build-arg PASSWORD=$PASSWORD --build-arg APP_USER=$APP_USER --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
   only:
     refs:
       - master
