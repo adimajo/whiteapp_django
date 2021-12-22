@@ -1,5 +1,6 @@
-# pull official base image
-FROM docker-remote.registry.saas.cagip.group.gca/library/python:3.8-slim
+ARG DOCKER_REGISTRY
+
+FROM ${DOCKER_REGISTRY}python:3.8-slim
 
 ARG POSTGRES_MASTER_DB
 ARG POSTGRES_MASTER_USER
@@ -37,7 +38,10 @@ RUN apt update \
 && python manage.py collectstatic --noinput \
 && python manage.py makemigrations
 
-RUN useradd -r -s /bin/bash -g sudo whiteappuser
+RUN echo "auth       [success=ignore default=1] pam_succeed_if.so user = postgres" >> /etc/pam.d/su
+RUN echo "auth       sufficient   pam_succeed_if.so use_uid user ingroup postgres" >> /etc/pam.d/su
+
+RUN useradd -r -s /bin/bash whiteappuser
 
 RUN usermod -aG postgres whiteappuser
 
