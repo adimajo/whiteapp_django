@@ -33,6 +33,7 @@ RUN apt update \
 && apt install -y libpq-dev gcc postgresql \
 && pip install --upgrade pip \
 && pip install pipenv \
+&& chown -R postgres whiteapp \
 && cd whiteapp \
 && pipenv install --system --deploy \
 && python manage.py collectstatic --noinput \
