@@ -249,7 +249,7 @@ promote_staging:
 #  <<: *common_tag
 #  <<: *common_deploy
 #  script:
-#    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
+#    - . ./build.env
 #    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
 #    - git clone $BOOT_GITLAB_DEPLOY_REPO yaml_deploy_folder
 #    - cd yaml_deploy_folder/int
@@ -271,7 +271,7 @@ promote_staging:
 #  <<: *common_tag
 #  <<: *common_deploy
 #  script:
-#    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
+#    - . ./build.env
 #    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
 #    - git clone $BOOT_GITLAB_DEPLOY_REPO yaml_deploy_folder
 #    - cd yaml_deploy_folder/uat
@@ -308,7 +308,7 @@ promote_stable:
 #  <<: *ci_tools
 #  <<: *common_tag
 #  script:
-#    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
+#    - . ./build.env
 #    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
 #    - git -c http.sslVerify=false clone $BOOT_GITLAB_DEPLOY_REPO yaml_deploy_folder
 #    - cd yaml_deploy_folder/pprd
@@ -343,7 +343,7 @@ promote_stable:
 #  <<: *ci_tools
 #  <<: *common_tag
 #  script:
-#    - APPLICATION_TAG_VERSION=`cat $VERSION_FILE`
+#    - . ./build.env
 #    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
 #    - git -c http.sslVerify=false clone $BOOT_GITLAB_DEPLOY_REPO yaml_deploy_folder
 #    - cd yaml_deploy_folder/prd
