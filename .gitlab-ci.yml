@@ -6,9 +6,12 @@
   image:
     name: layer-kraft.registry.saas.cagip.group.gca/ci-tools:latest
 
+variables:
+  CURRENT_TAG: $CURRENT_TAG
+
 .common_tag: &common_tag
   tags:
-  - kubernetes
+  - $CURRENT_TAG
 
 .common_deploy: &common_deploy
   before_script:
@@ -60,6 +63,7 @@ lint:
       - whiteapp/**/*
 
 test:
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     paths:
       - coverage.xml
@@ -117,26 +121,52 @@ generate_tag:
 quality_check:
   stage: sonar_check
   image:
-    name: docker-remote.registry.saas.cagip.group.gca/sonarsource/sonar-scanner-cli:4.6
+    name: ${DOCKER_REGISTRY_BIS}sonarsource/sonar-scanner-cli:4.6
   <<: *common_tag
   variables:
-    SONAR_TOKEN: "${BOOT_SONAR_TOKEN}"
-    SONAR_HOST_URL: "${BOOT_SONAR_INSTANCE}"
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
     GIT_DEPTH: 0 # Tells git to fetch all the branches of the project, required by the analysis task
-    SONAR_SCANNER_OPTS: "-Djavax.net.ssl.trustStore=cacerts"
   script:
     - . ./build.env
     - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
-    - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> cacreditagricoleserver.crt
-    - apk --update add java-common
-    - keytool -import -alias mycert -file cacreditagricoleserver.crt -storetype jks -trustcacerts -noprompt -keypass keypass -keystore cacerts -storepass test@123
+    - if [ $BOOT_GITLAB_SRV_ACCOUNT != '' ]; then wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> cacreditagricoleserver.crt ; fi
+    - if [ $BOOT_GITLAB_SRV_ACCOUNT != '' ]; then keytool -import -alias mycert -file cacreditagricoleserver.crt -storetype jks -trustcacerts -noprompt -keypass keypass -keystore cacerts -storepass test@123 ; fi
+    - if [ $BOOT_GITLAB_SRV_ACCOUNT != '' ]; then export SONAR_SCANNER_OPTS="-Djavax.net.ssl.trustStore=cacerts" ; fi
     - sonar-scanner -Dsonar.exclusions=tests/**,docs/**,coverage.xml,setup.py -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
   only:
    - master
 
-document:
+pages:
   stage: document
+  rules:
+    - if: $BOOT_GITLAB_SRV_ACCOUNT == null
+  <<: *common_python
+  <<: *common_tag
+  script:
+    - . ./build.env
+    - pip install pipenv==2021.5.29
+    - apt update
+    - apt install -y make libpq-dev gcc git
+    - cd docs
+    - export PIPENV_PIPFILE=../whiteapp/Pipfile
+    - pipenv install -d --skip-lock
+    - pipenv run make clean
+    - pipenv run make html
+    - cd ..
+    - mv docs/build/html public
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 week
+
+document_cagip:
+  stage: document
+  rules:
+    - if: $BOOT_GITLAB_SRV_ACCOUNT
+      changes:
+        - .gitlab-ci.yml
+        - whiteapp/**/*
+        - docs/**/*
   <<: *common_python
   <<: *common_tag
   script:
@@ -165,20 +195,14 @@ document:
         else
             echo "Nothing to push"
         fi
-  artifacts:
-    paths:
-      - docs/build/html
-    expire_in: 1 week
-  only:
-    refs:
-      - branches
-    changes:
-      - .gitlab-ci.yml
-      - whiteapp/**/*
-      - docs/**/*
 
 build whiteapp:
   stage: build
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master" && $BOOT_GITLAB_SRV_ACCOUNT
+      changes:
+        - .gitlab-ci.yml
+        - whiteapp/**/*
   <<: *common_tag
   image:
     name: docker-remote.registry.saas.cagip.group.gca/kaniko-project/executor:debug-v1.0.0
@@ -198,15 +222,44 @@ build whiteapp:
        echo "${KANIKOCFG}" >> /kaniko/.docker/config.json
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt
     - /kaniko/executor --cache=true --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg DOCKER_REGISTRY=$DOCKER_REGISTRY --build-arg POSTGRES_MASTER_DB=$POSTGRES_MASTER_DB --build-arg POSTGRES_MASTER_USER=$POSTGRES_MASTER_USER --build-arg POSTGRES_MASTER_PASSWORD=$POSTGRES_MASTER_PASSWORD --build-arg POSTGRES_SCHEMA=$POSTGRES_SCHEMA --build-arg POSTGRES_PORT=$POSTGRES_PORT --build-arg POSTGRES_URL=$POSTGRES_URL --build-arg PASSWORD=$PASSWORD --build-arg APP_USER=$APP_USER --build-arg TEST_DB=$TEST_DB --build-arg TEST_STATIC=$TEST_STATIC --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
-  only:
-    refs:
-      - master
-    changes:
-      - .gitlab-ci.yml
-      - whiteapp/**/*
+
+build_and_deploy_gitlab_registry:
+  stage: deploy_dev
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master" && $BOOT_GITLAB_SRV_ACCOUNT == null
+  <<: *common_tag
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - - . ./build.env
+    - cd whiteapp
+    - echo $CI_REGISTRY_USER
+    - docker build --pull -t "${CI_REGISTRY}/${DOCKER_CI_REGISTRY_USER}/${CI_PROJECT_NAME}:${APPLICATION_TAG_VERSION}" .
+    - docker push "${CI_REGISTRY}/${DOCKER_CI_REGISTRY_USER}/${CI_PROJECT_NAME}:${APPLICATION_TAG_VERSION}"
+
+build_and_deploy_dockerhub:
+  stage: deploy_dev
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master" && $BOOT_GITLAB_SRV_ACCOUNT == null
+  <<: *common_tag
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$DOCKER_CI_REGISTRY_USER" -p "$DOCKER_CI_REGISTRY_PASSWORD" $DOCKER_CI_REGISTRY
+  script:
+    - - . ./build.env
+    - cd whiteapp
+    - docker build --pull -t "${DOCKER_CI_REGISTRY_USER}/${CI_PROJECT_NAME}:${APPLICATION_TAG_VERSION}" .
+    - docker push "${DOCKER_CI_REGISTRY_USER}/${CI_PROJECT_NAME}:${APPLICATION_TAG_VERSION}"
 
 deploy_dev:
   stage: deploy_dev
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master" && $BOOT_GITLAB_SRV_ACCOUNT
   <<: *ci_tools
   <<: *common_tag
   <<: *common_deploy
@@ -223,12 +276,12 @@ deploy_dev:
         else
             echo "Nothing to push"
         fi
-  only:
-   - master
 
 promote_staging:
   stage: promote_staging
-  when: manual
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master" && $BOOT_GITLAB_SRV_ACCOUNT
+      when: manual
   <<: *ci_tools
   <<: *common_tag
   variables:
@@ -239,8 +292,6 @@ promote_staging:
     - . ./build.env
     - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
     - 'curl -S -k -u ${CREDS} -XPOST https://$BOOT_ARTI_REGISTRY/api/docker/$SOURCE_REPO/v2/promote -H "Content-Type: application/json" -d"{\"targetRepo\":\"${TARGET_REPO}\",\"dockerRepository\":\"${BOOT_ARTI_REPO}\",\"tag\":\"${APPLICATION_TAG_VERSION}\",\"copy\":true}"'
-  only:
-   - master
 
 #deploy_int:
 #  stage: deploy_int
@@ -288,7 +339,9 @@ promote_staging:
 
 promote_stable:
   stage: promote_stable
-  when: manual
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master" && $BOOT_GITLAB_SRV_ACCOUNT
+      when: manual
   <<: *ci_tools
   <<: *common_tag
   variables:
