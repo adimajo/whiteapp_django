@@ -104,6 +104,7 @@ security:
 generate_tag:
   artifacts:
     paths:
+      - whiteapp/Pipfile
       - whiteapp/Pipfile.lock
       - build.env
   stage: versionning
@@ -112,9 +113,10 @@ generate_tag:
   only:
    - master
   script:
-    - pip install pipenv==2021.5.29
+    - pip install pipenv
     - apt update
     - apt -y install libpq-dev gcc
+    - sed -i 's|${PYPI_REMOTE}|'${PYPI_REMOTE}'|g' whiteapp/Pipfile
     - PIPENV_PIPFILE=whiteapp/Pipfile pipenv install
     - echo export APPLICATION_TAG_VERSION=`python -c 'import whiteapp; print(whiteapp.__version__)'` >> build.env
 
@@ -132,7 +134,7 @@ quality_check:
     - if [ $BOOT_GITLAB_SRV_ACCOUNT != '' ]; then wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> cacreditagricoleserver.crt ; fi
     - if [ $BOOT_GITLAB_SRV_ACCOUNT != '' ]; then keytool -import -alias mycert -file cacreditagricoleserver.crt -storetype jks -trustcacerts -noprompt -keypass keypass -keystore cacerts -storepass test@123 ; fi
     - if [ $BOOT_GITLAB_SRV_ACCOUNT != '' ]; then export SONAR_SCANNER_OPTS="-Djavax.net.ssl.trustStore=cacerts" ; fi
-    - sonar-scanner -Dsonar.exclusions=tests/**,docs/**,coverage.xml,setup.py -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
+    - sonar-scanner -Dsonar.exclusions=tests/**,docs/**,coverage.xml,setup.py -Dsonar.organization=adimajo -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.qualitygate.wait=true -Dsonar.projectKey=${CI_PROJECT_NAME} -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
   only:
    - master
 
@@ -205,7 +207,7 @@ build whiteapp:
         - whiteapp/**/*
   <<: *common_tag
   image:
-    name: docker-remote.registry.saas.cagip.group.gca/kaniko-project/executor:debug-v1.0.0
+    name: ${DOCKER_REGISTRY_BIS}kaniko-project/executor:debug-v1.0.0
     entrypoint: [""]
   script:
     - . ./build.env
@@ -352,8 +354,6 @@ promote_stable:
     - . ./build.env
     - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
     - docker-promote --tag=$APPLICATION_TAG_VERSION
-  only:
-   - master
 
 #deploy_preprod:
 #  stage: deploy_pprd

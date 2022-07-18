@@ -1,4 +1,4 @@
-[![Python Flask docker](https://github.com/adimajo/whiteapp_django/actions/workflows/python-django.yml/badge.svg)](https://github.com/adimajo/whiteapp_django/actions/workflows/python-django.yml)
+[![Python Django docker](https://github.com/adimajo/whiteapp_django/actions/workflows/python-django.yml/badge.svg)](https://github.com/adimajo/whiteapp_django/actions/workflows/python-django.yml)
 [![Build Status](https://app.travis-ci.com/adimajo/whiteapp_django.svg?token=opB6ydhp1rfhZkQiU4AY&branch=master)](https://app.travis-ci.com/adimajo/whiteapp_django)
 [![pipeline status](https://gitlab.com/adimajo/whiteapp_django/badges/master/pipeline.svg)](https://gitlab.com/adimajo/whiteapp_django/-/commits/master)
 
@@ -7,7 +7,7 @@
 
 # WhiteApp Python Django
 
-The `WhiteApp` package / Flask app is a template of a simple Django website which displays its current version.
+The `WhiteApp` Django app is a template of a simple Django website which displays its current version.
 The template ships with a Gitlab CI pipeline (which lints the code, documents it, runs tests, computes test coverage, checks on Sonarqube, builds a docker container and deploys it),
 a Github Actions pipeline (which lints, documents and upload the documentation as github page, checks the package, computes tests and coverage, builds a docker container and uploads it to Github),
 and a Travis pipeline (for elegant display of code coverage). 
