@@ -1,0 +1,23 @@
+whiteapp.DjangoSite
+===================
+
+.. automodule:: whiteapp.DjangoSite
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

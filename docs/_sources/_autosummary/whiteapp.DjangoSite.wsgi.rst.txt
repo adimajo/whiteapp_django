@@ -1,0 +1,23 @@
+whiteapp.DjangoSite.wsgi
+========================
+
+.. automodule:: whiteapp.DjangoSite.wsgi
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

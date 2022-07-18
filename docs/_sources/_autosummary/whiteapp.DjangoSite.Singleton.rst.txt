@@ -1,0 +1,29 @@
+whiteapp.DjangoSite.Singleton
+=============================
+
+.. automodule:: whiteapp.DjangoSite.Singleton
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Singleton
+   
+   
+
+   
+   
+   
+
+
+

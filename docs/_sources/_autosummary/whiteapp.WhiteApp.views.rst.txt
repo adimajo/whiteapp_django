@@ -1,0 +1,30 @@
+whiteapp.WhiteApp.views
+=======================
+
+.. automodule:: whiteapp.WhiteApp.views
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Accueil
+      AccueilVue
+   
+   
+
+   
+   
+   
+
+
+

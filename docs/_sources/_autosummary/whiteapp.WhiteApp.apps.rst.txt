@@ -1,0 +1,29 @@
+whiteapp.WhiteApp.apps
+======================
+
+.. automodule:: whiteapp.WhiteApp.apps
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      WhiteAppConfig
+   
+   
+
+   
+   
+   
+
+
+

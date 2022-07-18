@@ -1,0 +1,23 @@
+whiteapp.DjangoSite.settings
+============================
+
+.. automodule:: whiteapp.DjangoSite.settings
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
