@@ -88,4 +88,6 @@ jobs:
           context: whiteapp
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.APPLICATION_TAG_VERSION }}
-          build-args: PYPI_REMOTE=${{ env.PYPI_REMOTE }}
+          build-args: |
+            PYPI_REMOTE=${{ env.PYPI_REMOTE }}
+            TEST_DB=1
