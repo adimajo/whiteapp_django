@@ -8,7 +8,7 @@ COPY . ./whiteapp
 EXPOSE 8000
 
 # install dependencies
-RUN apk --update add --no-cache libpq-dev gcc postgresql \
+RUN apk --update add --no-cache libpq-dev gcc gfortran build-base wget libpng-dev openblas-dev linux-headers \
 && pip install --upgrade pip \
 && pip install pipenv \
 && chown -R postgres whiteapp \
