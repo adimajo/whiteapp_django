@@ -113,7 +113,7 @@ test:
   <<: *common_tag
   script:
     - pip install pipenv==2021.5.29
-    - apk --update add --no-cache libpq-dev gcc
+    - apk --update add --no-cache libpq-dev gcc gfortran build-base wget libpng-dev openblas-dev linux-headers
     - export PIPENV_PIPFILE=whiteapp/Pipfile
     - pipenv install -d --skip-lock
     - pipenv run coverage run --source whiteapp/ -m pytest
@@ -170,7 +170,7 @@ pages:
   script:
     - . ./build.env
     - pip install pipenv
-    - apk --update add --no-cache make libpq-dev gcc git
+    - apk --update add --no-cache libpq-dev gcc gfortran build-base wget libpng-dev openblas-dev linux-headers
     - cd docs
     - export PIPENV_PIPFILE=../whiteapp/Pipfile
     - pipenv install -d --skip-lock
@@ -197,8 +197,7 @@ document_cagip:
   script:
     - . ./build.env
     - pip install pipenv==2021.5.29
-    - apt update
-    - apt install -y make libpq-dev gcc git
+    - apk --update add --no-cache libpq-dev gcc gfortran build-base wget libpng-dev openblas-dev linux-headers
     - cd docs
     - export PIPENV_PIPFILE=../whiteapp/Pipfile
     - pipenv install -d --skip-lock
